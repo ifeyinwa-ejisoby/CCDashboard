@@ -31,7 +31,7 @@ To learn more, visit the American College of Surgeons PUF documentation,
 - `index.html`: html file of dashboard
 - `styles.css`: CSS file for additional styling of dashboard tabs
 
-## Findings and Real-World Impact
+## Findings and Real-World Impact ([Visit Dashboard](https://ifeyinwa-ejisoby.github.io/CCDashboard/))
 
 Although cervical cancer mortality rate in the U.S. has steadily declined, 
 it is still important to highlight regions in need of improved care. Additionally, 
