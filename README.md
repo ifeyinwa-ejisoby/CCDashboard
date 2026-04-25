@@ -27,7 +27,7 @@ To learn more, visit the American College of Surgeons PUF documentation,
   - `analysis.R`: R script for manipulating data and performing widget specific
   analysis
 - `output/`: where the processed data is stored as .rds files (not visible to Git)
-- `dashboard.Rmd`: R Markdown file for formatting and knitting dashboard
+- `index.Rmd`: R Markdown file for formatting and knitting dashboard
 - `index.html`: html file of dashboard
 - `styles.css`: CSS file for additional styling of dashboard tabs
 
