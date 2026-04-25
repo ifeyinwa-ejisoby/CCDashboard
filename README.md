@@ -1,7 +1,7 @@
 # Cervical Cancer and Treatment in the United States
 
 Each year, approximately 13,000-14,000 new cervical cancer cases are diagnosed in 
-the United States, with about 4,000 women succumbing to the disease. 
+the United States, with about 4,000 women succumbing to the disease 
 [[CDC](https://www.cdc.gov/cervical-cancer/statistics/index.html)]. This dashboard
 contains exploratory and statistical analyses of the regional make-up of cases, 
 mortality rates by region, the relative mortality risk by the International 
@@ -18,17 +18,18 @@ to 2022. As a Health Insurance Portability and Accountability Act (HIPAA)-compli
 used is confidential. Access to NCDB PUFs is only permitted through an application process 
 to investigators associated with CoC-accredited cancer programs. 
 
-To learn more, visit the American College of Surgeons PUF [documentation](https://www.facs.org/quality-programs/cancer-programs/national-cancer-database/puf/).
+To learn more, visit the American College of Surgeons PUF documentation,
+[here](https://www.facs.org/quality-programs/cancer-programs/national-cancer-database/puf/).
 
 ## Repository Format
-`code/`: file directory for code
+- `code/`: file directory for code
   - `clean_data.R`: R script for cleaning raw cervix uteri PUF 2022 file
   - `analysis.R`: R script for manipulating data and performing widget specific
   analysis
-`dashboard.Rmd`: R Markdown file for formatting and knitting dashboard
-`dashboard.html`: html file of dashboard
-`output/`: where the processed data is stored as .rds files (not visible to git)
-`styles.css`: CSS file for additional styling of dashboard tabs
+- `output/`: where the processed data is stored as .rds files (not visible to Git)
+- `dashboard.Rmd`: R Markdown file for formatting and knitting dashboard
+- `index.html`: html file of dashboard
+- `styles.css`: CSS file for additional styling of dashboard tabs
 
 ## Findings and Real-World Impact
 

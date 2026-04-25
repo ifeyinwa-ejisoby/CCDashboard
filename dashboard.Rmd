@@ -239,6 +239,8 @@ To learn more, visit the American College of Surgeons PUF [documentation](https:
 
 Column {data-width=200}
 ---------------------------------------------------------------------------
-### GitHub
+### GitHub Links
 
 Source code can be found at my GitHub repository [here](https://github.com/ifeyinwa-ejisoby/CCDashboard). 
+To check out more ofmy public health projects, visit my 
+GitHub profile [here](https://github.com/ifeyinwa-ejisoby)!
