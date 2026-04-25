@@ -1,0 +1,15 @@
+#real-world-impact {
+  background-color:  #E8F4FB;
+}
+
+#real-world-impact .chart-title {
+  color:#1F78B4;
+}
+
+#real-world-impact .chart-notes {
+  color: #1F78B4;
+}
+
+#real-world-impact .chart-stage {
+  display: none;
+}

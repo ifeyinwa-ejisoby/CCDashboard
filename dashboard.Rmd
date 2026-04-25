@@ -1,0 +1,244 @@
+---
+title: "Cervical Cancer Cases, Mortality, and Treatment in the United States (2004-2022)"
+author: "Dashboard by Ifeyinwa Ejisoby-Nwosu"
+output:
+  flexdashboard::flex_dashboard:
+    theme: "cerulean" 
+    orientation: columns
+    vertical_layout: fill
+    css: styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE)
+
+library(flexdashboard)
+library(bslib)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(broom)
+```
+
+Main
+==================================================================
+
+Column {data-width=625} {.tabset}
+-------------------------------------------------------------------------------
+
+### Distribution of Cervical Cancer in the United States
+
+```{r, choropleth-map-distribution}
+# load map data
+map_df <- readRDS(file = here::here("output", "map_data.rds"))
+
+# create figure
+choroplethmap <- plot_ly(
+  data = map_df,
+  type = "choropleth",
+  locations = ~states,
+  locationmode = "USA-states",
+  z = ~Percent,
+  frame = ~`Year of Diagnosis`,
+  colorscale = "Viridis",
+  reversescale = TRUE,
+  colorbar = list(title = " % of Cases",
+                  tickvals = c(5, 10, 15, 20, 25),
+                  ticktext = c("5", "10", "15", "20", "25")),
+  text = ~paste0(
+    "Region: ", regions,
+    "<br>Year: ", `Year of Diagnosis`,
+    "<br>% of cases: ", round(Percent, 1)
+  ),
+  hoverinfo = "text"
+) %>%
+  layout(
+    title = "Regional Distribution of Cervical Cancer Cases by Year (2004-2022)",
+    geo = list(scope = "usa")) %>% 
+      animation_slider(currentvalue = list(prefix = "Year of Diagnosis: ")
+                       )
+
+choroplethmap
+```
+
+> There is minimal change in the regional distribution of cervical cancer cases throughout from 2004-2022 years: the South Atlantic region has consistently made up about 20% of all cervical cancer cases while the Mountain region has stayed below 5%. There are subtle changes in percentage throughout the other regions. The West South Central region has increased its proportion of cancer cases from 2004 (9.9%) to 2022 (11.5%).
+
+### Change in Regional Mortality Rate
+
+```{r, choropleth-map-mortality}
+# load map data
+mort_map_df <- readRDS(file = here::here("output", "mort_map_data.rds"))
+
+# create figure
+choropleth_mortmap <- plot_ly(
+  data = mort_map_df,
+  type = "choropleth",
+  locations = ~states,
+  locationmode = "USA-states",
+  z = ~`Mortality Rate`,
+  zmin = 15,
+  zmax = 65,
+  frame = ~`Year of Diagnosis`,
+  colorscale = "YlOrRd",
+  reversescale = TRUE,
+  colorbar = list(title = "Mortality<br>Rate (%)",
+                  tickvals = c(15, 40, 65),
+                  ticktext = c("15", "40", "65")),
+  text = ~paste0(
+    "Region: ", regions,
+    "<br>Year: ", `Year of Diagnosis`,
+    "<br>Mortality Rate (%): ", round(`Mortality Rate`, 1)
+  ),
+  hoverinfo = "text"
+) %>%
+  layout(
+    title = "Regional Mortality Rate of Cervical Cancer by Year (2004-2021)",
+    geo = list(scope = "usa"),
+    annotations = list(
+      list(
+        text = "Note: Vital status for 2022 is unavailable.",
+        x = 0,
+        y = -0.10,
+        xref = "paper",
+        yref = "paper",
+        showarrow = FALSE,
+        xanchor = "left",
+        yanchor = "top",
+        font = list(size = 10, color = "gray")
+      )
+    )
+  ) %>%
+  animation_slider(currentvalue = list(prefix = "Year of Diagnosis: ")
+                   )
+choropleth_mortmap
+```
+
+> Mortality rate appears to be on the decline across all regions of the United States. Rates in the East South Central Region, consisting of Kentucky, Tennesee, Alabama, and Mississippi, increased from 2017 (42.6%) to 
+2018 (45.3%) and disproportionately remain higher than all other regions. Low mortality rates for patients diagnosed 
+after 2019 may be attributable to restricted access to care and low documentation during the COVID-19 pandemic.
+
+Column {data-width=375}
+-------------------------------------------------------------------------------
+
+### Relative Risk of Mortality for Stages I-IV Post-Hysterectomy
+
+```{r, forest-plot}
+# load data for plot
+plot_df <- readRDS(here::here("output", "survival_results.rds"))
+
+# add descriptions for FIGO stages
+stage_desc <- c(
+  "Stage II" = "Carcinoma beyond uterus, not to pelvic wall or lower vagina.",
+  "Stage III" = "Pelvic wall/lower vagina involvement and/or kidney issues.",
+  "Stage IV" = "Beyond pelvis or bladder/rectum involvement."
+)
+
+plot_df$description <- stage_desc[plot_df$term]
+
+# create forestplot
+forestplot <- ggplot(plot_df, aes(
+  x = term,
+  y = estimate,
+  text = paste0(
+    "Stage: ", term,
+    "<br><i>", description, "</i>",
+    "<br>HR: ", round(estimate, 2),
+    "<br>95% CI: (", round(conf.low, 2), ", ", round(conf.high, 2), ")"
+  )
+)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  labs(x = "FIGO Stage",
+       y = "HR (Hazard Ratio)") +
+  coord_flip() +
+  theme_minimal()
+
+ggplotly(forestplot, tooltip = "text") %>%
+  layout(
+    title = list(
+      text = "Adjusted Hazard Ratios for Stages II-IV vs. Stage I",
+      x = 0.5,
+      xanchor = "center"
+    ),
+    annotations = list(
+      list(
+        text = "ref.",
+        x = 0.05,   # slightly right of plot area
+        y = 0.5,
+        xref = "paper",
+        yref = "y",
+        showarrow = FALSE,
+        font = list(size = 10, color = "black")
+      )),
+    margin = list(t = 50, 
+                  b = 70)
+  )
+```
+
+> Note: HR is adjusted for age, tumor size, and lymph vascular invasion. As FIGO stage increases, the risk of death increases drastically. Those diagnosed with Stage IV cervical cancer have almost 7 times more hazard of death than those diagnosed with Stage I cervical cancer, adjusting for age, tumor size, and lymph vascular invasion.
+
+### Post-Hysterectomy Treatment by FIGO Stage
+
+```{r, heatmap}
+# load data
+heatmap_df <- readRDS(here::here("output", "treatment_summary.rds"))
+
+# heatmap
+heatmap <- plot_ly(
+  data = heatmap_df,
+  x = ~treatment,
+  y = ~STAGE,
+  z = ~Percent,
+  type = "heatmap",
+  colorscale = "Cividis",
+  reversescale = TRUE,
+  zmin = 0,
+  zmax = 100,
+  customdata = ~as.matrix(cbind(n, total)),
+  colorbar = list(title = "%",
+                  len = 0.7),
+  hovertemplate = paste("FIGO Stage: %{y}<br>",
+                        "Treatment: %{x}<br>",
+                        "Recieved Treatment: %{z:.1f}%<extra></extra>")) %>%
+  layout(title = "% Post-Operative Treatment Recieved by FIGO Stage",
+         xaxis = list(title = "Treatment Type"),
+         yaxis = list(title = "FIGO Stage"),
+         margin = list(l = 80, r = 40)
+         )
+
+heatmap
+```
+
+> Note: As patients often undergo multiple adjuvant treatments, like concurrent chemoradiation therapy, percentages
+do not sum up to 100. 
+
+### **Real-World Impact**
+```{r, fig.width=0.1, fig.height=0.1}
+```
+
+> Although U.S. cervical cancer mortality rates have steadily declined, it is still important to highlight regions in need of improved care. Additionally, understanding relative mortality risks among FIGO stages and their treatment types is pertinent to shifting innovative adjuvant therapy research focus
+
+About 
+=================================================================
+
+Column {data-width=800} 
+---------------------------------------------------------------------------
+### Dataset Description
+
+Data used in this dashboard is from the National Cancer Database (NCDB)
+Cervical Cancer Participant User File (PUF) 2022. This de-identified patient-level data, with ~190,000 patients, 
+is collected from Commission on Cancer (CoC)-accredited registries and hospitals from 2004
+to 2022. As a Health Insurance Portability and Accountability Act (HIPAA)-compliant data file, the data 
+used is confidential. Access to NCDB PUFs is only permitted through an application process 
+to investigators associated with CoC-accredited cancer programs. 
+
+To learn more, visit the American College of Surgeons PUF [documentation](https://www.facs.org/quality-programs/cancer-programs/national-cancer-database/puf/).
+
+Column {data-width=200}
+---------------------------------------------------------------------------
+### GitHub
+
+Source code can be found at my GitHub repository [here](https://github.com/ifeyinwa-ejisoby/CCDashboard). 
