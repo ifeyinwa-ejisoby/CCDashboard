@@ -151,7 +151,7 @@ forestplot <- ggplot(plot_df, aes(
   geom_point(size = 3) +
   geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
   geom_hline(yintercept = 1, linetype = "dashed") +
-  labs(x = "FIGO Stage",
+  labs(x = "FIGO",
        y = "HR (Hazard Ratio)") +
   coord_flip() +
   theme_minimal()
@@ -199,13 +199,13 @@ heatmap <- plot_ly(
   zmax = 100,
   customdata = ~as.matrix(cbind(n, total)),
   colorbar = list(title = "%",
-                  len = 0.7),
+                  len = 0.95),
   hovertemplate = paste("FIGO Stage: %{y}<br>",
                         "Treatment: %{x}<br>",
                         "Recieved Treatment: %{z:.1f}%<extra></extra>")) %>%
-  layout(title = "% Post-Operative Treatment Recieved by FIGO Stage",
+  layout(title = "% Post-Operative Treatment Recieved by Stage",
          xaxis = list(title = "Treatment Type"),
-         yaxis = list(title = "FIGO Stage"),
+         yaxis = list(title = "FIGO"),
          margin = list(l = 80, r = 40)
          )
 
